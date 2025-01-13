@@ -4,6 +4,8 @@ This is BIM LLM Code Agent for the purpose of checking LLM Agent Performance as 
 <div style="text-align: center;">
 <img src="https://github.com/mac999/BIM_LLM_code_agent/blob/main/doc/img1.gif" height="400">
 </div>
+
+
 ## Features
 
 - **BIM Query Handling**: Processes natural language queries to extract or analyze BIM data.
