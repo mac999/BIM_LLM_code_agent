@@ -1,6 +1,6 @@
 # BIM LLM Code Agent
 
-This is BIM LLM Code Agent for the purpose of checking LLM Agent Performance as the viewpoint of complicated model like IFC and publishing paper. It is an open-source project that combines Building Information Modeling (BIM) with large language models (LLMs) to handle queries and automate tasks involving BIM files, IFC files. This tool streamlines reasoning, code generation, and analysis for BIM professionals, making it easier to interact with complex IFC BIM.
+This is BIM LLM Code Agent for the purpose of checking LLM Agent Performance as the viewpoint of complicated model like IFC and publishing paper. It is an open-source project that combines Building Information Modeling (BIM) with large language models (LLMs) to handle queries and automate tasks involving BIM files, IFC files. This tool streamlines reasoning, code generation, and analysis for BIM professionals, making it easier to interact with complex IFC BIM. This project is not perfect. Sometimes, it has hallucinations and sometimes it generates incomplete code. This requires more formal RAG handling and LLM usage.
 <div style="text-align: center;">
 <img src="https://github.com/mac999/BIM_LLM_code_agent/blob/main/doc/img1.gif" height="400">
 </div>
