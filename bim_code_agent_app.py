@@ -8,7 +8,7 @@
 import streamlit as st
 import os, re, textwrap, ast, json, subprocess, sys, matplotlib.pyplot as plt, pandas as pd, pyvista as pv, plotly
 from typing import List, Dict, Any
-from bim_multi_agent import init_multi_agent, update_vector_db, get_bim_input_files
+from bim_code_agent import init_multi_agent, update_vector_db, get_bim_input_files
 
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
