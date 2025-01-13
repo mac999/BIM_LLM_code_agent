@@ -1,0 +1,72 @@
+import ifcopenshell
+from ifcopenshell import geom
+import numpy as np
+import os, sys
+from OCC.Core.gp import gp_Vec
+from OCC.Core.Quantity import Quantity_Color, Quantity_TOC_RGB
+from OCC.Core.Graphic3d import Graphic3d_ClipPlane
+from OCC.Display.SimpleGui import init_display
+from OCC.Display.OCCViewer import Viewer3d
+from OCC.Core.BRepBndLib import brepbndlib_Add, brepbndlib
+from OCC.Core.Bnd import Bnd_Box
+
+# get and make list of object's property set in IFC file
+def get_object_pset(self, ifc_fname: str):
+    # Define the list of element types to process
+    element_types = [
+        'IfcSite', 'IfcSpace', 'IfcWall', 'IfcDoor', 'IfcWindow',
+        'IfcCovering', 'IfcBuildingElementPart', 'IfcSlab', 'IfcBeam',
+        'IfcColumn', 'IfcBuildingElementProxy', 'IfcBuildingStorey',
+        'IfcWallStandardCase', 'IfcMember', 'IfcStair', 'IfcRailing', 'IfcColumn'
+    ]
+    
+    # Open the IFC file
+    ifc_database = ifcopenshell.open(ifc_fname)
+    process_list = []
+
+    # Iterate through the IFC database
+    for product in ifc_database:
+        obj_type = product.is_a()
+        
+        # Skip if the product type is not in the allowed element types
+        if obj_type not in element_types:
+            continue
+        
+        # Initialize object with name and type
+        obj = {'name': product.Name, 'type': obj_type}
+        
+        try:
+            # Skip if product does not have IsDefinedBy attribute
+            if product.IsDefinedBy is None:
+                continue
+            
+            # Iterate through relationships
+            for relationship in product.IsDefinedBy:
+                # Check if relationship is of type IfcRelDefinesByProperties
+                if not relationship.is_a('IfcRelDefinesByProperties'):
+                    continue
+                
+                # Check if RelatingPropertyDefinition is of type IfcPropertySet
+                if not relationship.RelatingPropertyDefinition.is_a('IfcPropertySet'):
+                    continue
+                
+                pset = relationship.RelatingPropertyDefinition
+                
+                # Iterate through the properties in the property set
+                for property in pset.HasProperties:
+                    # Only process IfcPropertySingleValue properties
+                    if not property.is_a('IfcPropertySingleValue'):
+                        continue
+                    
+                    # Add property name and value to the object
+                    obj[property.Name] = property.NominalValue.wrappedValue
+            
+            # Append the processed object to the list
+            process_list.append(obj)
+        
+        except Exception as e:
+            # Handle exceptions silently
+            pass
+    
+    # Return the processed list
+    return process_list
