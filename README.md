@@ -97,6 +97,7 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 - [LangChain](https://www.langchain.com/)
 - [IfcOpenShell](http://ifcopenshell.org/)
 - [Streamlit](https://streamlit.io/)
+- [BIM Knowledge Expert Agent Research Based on LLM and RAG](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003125522/)
 
 ---
 
