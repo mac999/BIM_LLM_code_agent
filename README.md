@@ -25,7 +25,7 @@ This is BIM LLM Code Agent for the purpose of checking LLM Agent Performance as 
 1. **Clone the Repository**  
    Clone the project to your local system:
    ```bash
-   git clone https://github.com/yourusername/bim-llm-code-agent.git
+   git clone https://github.com/mac999/BIM_LLM_code_agent.git
    cd bim-llm-code-agent
    ```
 
