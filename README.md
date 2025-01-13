@@ -59,11 +59,12 @@ This is BIM LLM Code Agent for the purpose of checking LLM Agent Performance as 
 ### Example Usage
 
 - **Query**:  
-  "List all rooms starting with 'A' and show their names and areas in a table."  
+  "List all rooms starting with 'A' and show their names and areas in a table."
+  "'A'이름으로 시작하는 방을 표 형식으로 리스트해줘. 각 방의 이름, 면적 속성도 같이 표 형식으로 출력해."
   **Output**: A table summarizing the room names and areas, along with the Python code used to generate it.
 
 - **Query**:  
-  "Create a 3D chart of room volumes and areas."  
+  "'A'이름으로 시작하는 방을 표 형식으로 리스트해줘. 각 방의 이름, 면적, 속성, 부피도 같이 표 형식으로 출력해. 차트는 각 방의 이름에 대한 면적, 부피를 3차원 차트로 표시해줘야 해. 차트에 표시되는 각 데이터 포인트는 부피에 따라 색상이나 크기가 달라져야 해."  
   **Output**: A 3D Plotly chart displaying room data and the corresponding Python script.
 
 ## Project Structure
