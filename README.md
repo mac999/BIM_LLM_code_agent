@@ -39,7 +39,7 @@ This requires more formal RAG handling and LLM usage.
 2. **Install Required Libraries**  
    Manually install the necessary Python libraries:
    ```bash
-   pip install matplotlib pandas pyvista plotly langchain-openai langchain-core langchain-community streamlit ifcopenshell faiss-cpu
+   pip install matplotlib pandas pyvista plotly langchain-openai langchain-core langchain-community streamlit ifcopenshell faiss-cpu numpy
    ```
 
 3. **Set Up Environment Variables**  
