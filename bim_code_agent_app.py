@@ -33,75 +33,98 @@ class StreamlitApp:
 		if "messages" not in st.session_state:
 			st.session_state.messages = []
 
-		# Display chat history
-		for message in st.session_state.messages:
-			with st.chat_message(message["role"]):
-				st.markdown(message["content"])
+		self.update_vector_db_files()
 
 	def file_upload_callback(self):
-		st.write("Files selected")
+		st.write("Files selected.")
+
+	def update_vector_db_files(self):
+		# Update vector store with uploaded files
+		try:
+			bim_input_files = get_bim_input_files()
+			for uploaded_file in self.uploaded_files:
+				if any(uploaded_file.name.lower() in s for s in bim_input_files):
+					st.write(f'File {uploaded_file.name} already exists in the vector store. Please upload a different file.')
+					continue
+				update_vector_db(self.vector_db, uploaded_file.name)
+
+				expert_kb_folder = './expert_kb_files'
+				fname = os.path.join(expert_kb_folder, uploaded_file.name)
+				if os.path.exists(fname):
+					continue  
+				
+				bytes_data = uploaded_file.read()
+				st.write("Filename:", uploaded_file.name)
+				st.session_state.messages.append({"role": "file", "content": uploaded_file.name})
+				if not os.path.exists(expert_kb_folder):
+					os.makedirs(expert_kb_folder)
+				with open(fname, "wb") as f:
+					f.write(bytes_data)
+				# st.write(f"Updating vector store with file: {uploaded_file.name}")
+		except Exception as e:
+			st.error(f"Error: {e}")
+			print(f"Error: {e}")
+			pass
 
 	def run_streamlit_app(self):
-		if prompt := st.chat_input("What can I help you with?"):
-			st.session_state.messages.append({"role": "user", "content": prompt})
-			with st.chat_message("user"):
-				st.markdown(prompt)
+		# display the previous messages
+		for message in st.session_state.messages:
+			with st.chat_message(message["role"]):
+				item = message["content"]
+				if isinstance(item, list) or isinstance(item, float) or isinstance(item, int):
+					st.write(item)
+				elif isinstance(item, str):
+					st.markdown(item, unsafe_allow_html=True)
+				elif isinstance(item, plotly.graph_objects.Figure):
+					st.plotly_chart(item)			
 
-			# Update vector store with uploaded files
+		prompt = st.chat_input("What can I help you with?")
+		if prompt is None:
+			return
+
+		st.session_state.messages.append({"role": "user", "content": prompt})
+		with st.chat_message("user"):
+			st.markdown(prompt, unsafe_allow_html=True)
+
+		# Add selected tools to the prompt
+		self.current_prompt = prompt
+
+		# Generate response using LCEL chain
+		with st.chat_message("assistant"):
 			try:
-				bim_input_files = get_bim_input_files()
-				for uploaded_file in self.uploaded_files:
-					if any(uploaded_file.name in s for s in bim_input_files):
-						st.write(f'File {uploaded_file.name} already exists in the vector store. Please upload a different file.')
-						continue
+				memory_contents = self.memory.load_memory_variables({})['chat_history'][-3:]
+				response = self.chains.invoke({"input": self.current_prompt, "chat_history": memory_contents})  # "agent_scratchpad": []})
 
-					bytes_data = uploaded_file.read()
-					st.write("filename:", uploaded_file.name)
-					expert_kb_folder = './expert_kb_files'
-					if not os.path.exists(expert_kb_folder):
-						os.makedirs(expert_kb_folder)
-					fname = os.path.join(expert_kb_folder, uploaded_file.name)
-					with open(fname, "wb") as f:
-						f.write(bytes_data)
-					# st.write(f"Updating vector store with file: {uploaded_file.name}")
-					update_vector_db(self.vector_db, uploaded_file.name)
+				output = response
+				output_for_memory = None
+				if isinstance(output, list):
+					for item in output:
+						if isinstance(item, list) or isinstance(item, float) or isinstance(item, int) or isinstance(item, str) or isinstance(item, plotly.graph_objects.Figure):
+							output_for_memory = item
+
+						if isinstance(item, list) or isinstance(item, float) or isinstance(item, int):
+							st.write(item)
+						elif isinstance(item, str):
+							st.markdown(item, unsafe_allow_html=True)
+						# elif isinstance(item, pd.DataFrame):
+						# 	st.table(item)
+						elif isinstance(item, plotly.graph_objects.Figure):
+							st.plotly_chart(item)
+				elif isinstance(output, dict):
+					if 'output' in output:
+						output = output['output']
+					st.markdown(output)
+				elif isinstance(output, str):
+					st.markdown(output)
+				self.memory.save_context({"input": self.current_prompt}, {"output": output_for_memory}) # self.memory.chat_memory.add_ai_message(response) 
+				st.session_state.messages.append({"role": "assistant", "content": output_for_memory})
+
 			except Exception as e:
 				st.error(f"Error: {e}")
 				print(f"Error: {e}")
 				pass
 
-			# Add selected tools to the prompt
-			self.current_prompt = prompt
-
-			# Generate response using LCEL chain
-			with st.chat_message("assistant"):
-				try:
-					memory_contents = self.memory.load_memory_variables({})['chat_history']
-					response = self.chains.invoke({"input": self.current_prompt, "chat_history": memory_contents})  # "agent_scratchpad": []})
-
-					output = response
-					if isinstance(output, list):
-						for item in output:
-							if isinstance(item, list) or isinstance(item, float) or isinstance(item, int):
-								st.write(item)
-							elif isinstance(item, str):
-								st.markdown(item, unsafe_allow_html=True)
-							elif isinstance(item, pd.DataFrame):
-								st.table(item)
-							elif isinstance(item, plotly.graph_objects.Figure):
-								st.plotly_chart(item)
-					elif isinstance(output, dict):
-						if 'output' in output:
-							output = output['output']
-						st.markdown(output)
-					elif isinstance(output, str):
-						st.markdown(output)
-					# self.memory.save_context({"input": self.current_prompt}, {"output": output}) # self.memory.chat_memory.add_ai_message(response) 
-					# st.session_state.messages.append({"role": "assistant", "content": output})
-				except Exception as e:
-					st.error(f"Error: {e}")
-					print(f"Error: {e}")
-					pass
+		print("Successfully executed the agent with LCEL chain.")
 
 @st.cache_resource
 def initialize_agent(tools: List[str] = []):

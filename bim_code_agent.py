@@ -30,6 +30,14 @@ os.environ["LANGCHAIN_PROJECT"] = "AGENT TUTORIAL"
 llm = memory = embeddings = vectorstore = tools = prompt = agent = agent_executor = chains = None
 bim_input_files = []
 
+def output_log(message: str, append: bool = False):
+	"""Output log message to console."""
+	print(message)
+	log_file = open('log.txt', 'a' if append else 'w', encoding='utf-8')
+	if log_file != None:
+		log_file.write(message + '\n')
+		log_file.close()
+
 # define custom chain
 @chain
 def BIM_chain(inputs: Dict) -> Dict:
@@ -64,18 +72,33 @@ def BIM_chain(inputs: Dict) -> Dict:
 	docs_contents = "\n".join([doc.page_content for doc in docs])
 	contents = f'{docs_contents}'
 
-	tools_prompt = f"You are an expert in {selected_tools} field. Refer to the following ### Context and ### Example to generate Python code for ### User command.\n\n### Context:\nUse IfcOpenShell in the BIM file {input_fname} to generate source code the user command in Python without inline code.\nSave the intermediate result of executing the user command using the process_list list variable. The process_list list contains a dictionary called obj. obj must define the name of the BIM object as name, the type as type, and other properties of the BIM object (product) as names and values.\nFor example, among the property names, area is Area, and corruption is Volumn, which are common names. Exclude the BIM property values ​​stored in the process_list that have the same name and value.\nThe variable name obtained as the result of the user command must always start with the tag named 'result_'. If the user command includes a command to output a table, save the result in a variable called result_df after creating a dataframe using the pandas library.\nIf the user command includes a command to output a chart, save it in a variable called result_fig using the plotly library.\nIf you need to get the corresponding objects (products) with attribute values ​​such as the name, use the following example code.\n\n### Example:\n{contents}.\nThe generated code order is the library import section, function declaration sections such as get_object_as_name functions, and the execution code to execute the command. The variable that stores the calculation result for the user command should be stored in the variable starting with the name result_, and the summary format of the final output should be stored in the result_markup variable using only HTML table, th, tr, td tags. Since an error may occur in the Python execution code, try exception handling should also be done throughout the code.\n\nThe user command is as follows.\n### User command:"
+	tools_prompt = f"""
+	You are an expert in {selected_tools} field. Refer to the following ### Context and ### Example to generate Python code for ### User command.
+	
+	### Context:
+	Use IfcOpenShell in the BIM file {input_fname} to generate source code the user command in Python without inline code.
+	Save the intermediate result of executing the user command using the process_list list variable. The process_list list contains a dictionary called obj. obj must define the name of the BIM object as name, the type as type, and other properties of the BIM object (product) as names and values.
+	For example, among the property names, area is Area, and volume is Volume, which are common names. Exclude the BIM property values ​​stored in the process_list that have the same name and value.
+	The variable name obtained as the result of the user command must always start with the tag named 'result_'. If the user command includes a command to output a table, save the result in a variable called result_df after creating a dataframe using the pandas library.
+	If the user command includes a command to output a chart, save it in a variable called result_fig using the plotly library.
+	If you need to get the corresponding objects (products) with attribute values ​​such as the name, use the following example code.
+	
+	### Example:
+	{contents}.
+	
+	The generated code order is the library import section, function declaration sections such as get_object_as_name functions, and the execution code to execute the command. The variable that stores the calculation result for the user command should be stored in the variable starting with the name result_, and the summary format of the final output should be stored in the result_markup variable using only HTML table, th, tr, td tags. Since an error may occur in the Python execution code, try exception handling should also be done throughout the code.
+	
+	The user command is as follows.
+	### User command:
+	"""
 	# 'A'이름으로 시작하는 방의 갯수가 몇개인지 출력해.
 	# 'A'이름으로 시작하는 방을 표 형식으로 리스트해줘. 각 방의 이름, 면적 속성도 같이 표 형식으로 출력해.
 	# 'A'이름으로 시작하는 방을 표 형식으로 리스트해줘. 각 방의 이름, 면적, 속성, 부피도 같이 표 형식으로 출력해. 차트는 각 방의 이름에 대한 면적, 부피를 3차원 차트로 표시해줘야 해. 차트에 표시되는 각 데이터 포인트는 부피에 따라 색상이나 크기가 달라져야 해.
 	# 
 	full_prompt = f'{tools_prompt}\n"{human_content}"'
 
-	log_file = open('log.txt', 'w', encoding='utf-8')
-	if log_file != None:
-		log_file.write(full_prompt)
-		log_file.close()
-
+	output_log(f"* Full prompt\n{full_prompt}")
+	
 	return full_prompt
 
 def activate_virtualenv(venv_path):
@@ -138,6 +161,7 @@ def run_python_code(code: str):
 
 		for try_index in range(3):
 			try:
+				output_log(f"* Generated code\n{code}", append=True)
 				exec(code)
 					
 				if 'result_markup' in locals():
@@ -196,7 +220,7 @@ def init_multi_agent(tools_option):
 	global llm, memory, embeddings, vectorstore, tools, prompt, agent, agent_executor, chains
 
 	# Initialize LLM
-	llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3) # temperature=0.5)
+	llm = ChatOpenAI(model="gpt-4o", temperature=0) # temperature=0.5)
 	
 	# Initialize memory
 	memory = ConversationBufferMemory(
