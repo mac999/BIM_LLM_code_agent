@@ -13,6 +13,8 @@ from bim_code_agent import init_multi_agent, update_vector_db, get_bim_input_fil
 os.environ["OMP_NUM_THREADS"] = "1"
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
+_llm = _chains = _vector_db = _memory = None
+
 class StreamlitApp:
 	def create_layout(self, llm, chains, vector_db, memory):
 		self.llm = llm
@@ -23,8 +25,15 @@ class StreamlitApp:
 
 		st.title("BIM Code Agent")
 		st.sidebar.image("logo.png", width=200) #, use_column_width=True)
-		st.sidebar.title("Available Tools")
-		self.selected_tools = st.sidebar.multiselect("Select tools to use:", ["Web Search", "Vector Search", "IFC Query"]) # Just Testing.
+		st.sidebar.title("Available Model and Tool")
+
+		def on_model_change():
+			global _llm, _chains, _vector_db, _memory
+			_llm, _chains, _vector_db, _memory = init_multi_agent([st.session_state.selected_tools], model_name=st.session_state.selected_model, init_db=True)
+			print(f"Model changed to: {self.selected_model}")
+
+		self.selected_model = st.sidebar.selectbox("Select LLM model:", ["gpt-4o", "gpt-3.5-turbo", "gemma3", "codegemma:2b", "codegemma:7b", "qwen2.5-coder:7b"], key="selected_model", on_change=on_model_change)  # Just Testing. https://ollama.com/library
+		self.selected_tools = st.sidebar.multiselect("Select tools to use:", ["Web Search", "Vector Search", "IFC Query"], key="selected_tools") # Just Testing.
 		
 		# File upload button
 		self.uploaded_files = st.sidebar.file_uploader("Upload BIM files", type=["IFC", "PDF", "json", "txt", "csv"], accept_multiple_files=True, on_change=self.file_upload_callback)

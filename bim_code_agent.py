@@ -5,7 +5,7 @@
 # description: This code is a part of the BIM Multi-Agent System project. Simple version to explain the concept.
 # reference:
 # 
-import sys, os, json, argparse, re, textwrap, ast, subprocess, sys
+import sys, os, json, argparse, re, textwrap, ast, subprocess, sys, shutil
 import matplotlib.pyplot as plt, pandas as pd, pyvista as pv, plotly
 from typing import List, Dict, Any
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
@@ -18,7 +18,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.output_parsers.json import JsonOutputParser
 from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
-from langchain_community.vectorstores import FAISS, Chroma
+from langchain_community.vectorstores import FAISS # Chroma
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_community.chat_models import ChatOllama
 from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
@@ -76,12 +76,12 @@ def BIM_chain(inputs: Dict) -> Dict:
 	You are an expert in {selected_tools} field. Refer to the following ### Context and ### Example to generate Python code for ### User command.
 	
 	### Context:
-	Use IfcOpenShell in the BIM file {input_fname} to generate source code the user command in Python without inline code.
-	Save the intermediate result of executing the user command using the process_list list variable. The process_list list contains a dictionary called obj. obj must define the name of the BIM object as name, the type as type, and other properties of the BIM object (product) as names and values.
+	1) Use IfcOpenShell in the BIM file {input_fname} to generate source code the user command in Python without inline code and main entry function.
+	2) Save the intermediate result of executing the user command using the process_list list variable. The process_list list contains a dictionary called obj. obj must define the name of the BIM object as name, the type as type, and other properties of the BIM object (product) as names and values.
 	For example, among the property names, area is Area, and volume is Volume, which are common names. Exclude the BIM property values ​​stored in the process_list that have the same name and value.
-	The variable name obtained as the result of the user command must always start with the tag named 'result_'. If the user command includes a command to output a table, save the result in a variable called result_df after creating a dataframe using the pandas library.
-	If the user command includes a command to output a chart, save it in a variable called result_fig using the plotly library.
-	If you need to get the corresponding objects (products) with attribute values ​​such as the name, use the following example code.
+	3) The variable name obtained as the result of the user command must always start with the tag named 'result_'. If the user command includes a command to output a table, save the result in a variable called result_df after creating a dataframe using the pandas library.
+	4) If the user command includes a command to output a chart, save it in a variable called result_fig using the plotly library.
+	5) If you need to get the corresponding objects (products) with attribute values ​​such as the name, use the following example code.
 	
 	### Example:
 	{contents}.
@@ -216,22 +216,31 @@ def run_command_chain(input: str) -> Dict:
 	output = run_python_code(input)
 	return output
 
-def init_multi_agent(tools_option):
+from ollama import chat
+from ollama import ChatResponse
+
+def init_multi_agent(tools_option, model_name="gpt-4o", init_db=False):
 	global llm, memory, embeddings, vectorstore, tools, prompt, agent, agent_executor, chains
 
 	# Initialize LLM
-	llm = ChatOpenAI(model="gpt-4o", temperature=0) # temperature=0.5)
-	
+	if model_name.startswith("gpt"):
+		llm = ChatOpenAI(model=model_name, temperature=0)
+		embeddings = OpenAIEmbeddings(api_key=os.environ["OPENAI_API_KEY"])
+	else:
+		llm = ChatOllama(model=model_name, temperature=0) # ChatOllama(model=model_name, temperature=0)
+		embeddings = FastEmbedEmbeddings()
+
 	# Initialize memory
 	memory = ConversationBufferMemory(
 		memory_key="chat_history",
 		return_messages=True
 	)
 	
-	# Initialize tools using decorated methods
-	embeddings = OpenAIEmbeddings(api_key=os.environ["OPENAI_API_KEY"]) # FastEmbedEmbeddings()
-
 	# load documents including .txt .pdf .csv .json in ./code_sample folder
+	if init_db:
+		if os.path.exists("./vectorstore_db") and os.access("./vectorstore_db", os.W_OK):
+			shutil.rmtree("./vectorstore_db")
+
 	if os.path.exists("./vectorstore_db"):
 		vectorstore = FAISS.load_local("./vectorstore_db", embeddings, allow_dangerous_deserialization=True)
 	else:
@@ -263,7 +272,7 @@ def init_multi_agent(tools_option):
 	if 'Web Search' in tools_option:
 		tools.append(web_search)
 	if 'Vector Search' in tools_option:
-		search_vector_store,
+		pass # TBD
 	
 	if len(tools_option) > 0:
 		pass
