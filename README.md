@@ -15,6 +15,10 @@ This requires more formal RAG handling and LLM usage.
 - **Interactive Web Interface**: Provides a user-friendly interface using Streamlit.
 - **Visualization and Reporting**: Generates tables, charts, and summaries based on user requests.
 
+## Version history
+- 0.1: 2024.9. initial version.
+- 0.2: 2025.6. fixed bug.
+
 ## Getting Started
 
 ### Prerequisites
