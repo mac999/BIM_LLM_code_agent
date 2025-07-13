@@ -73,22 +73,27 @@ def BIM_chain(inputs: Dict) -> Dict:
 	contents = f'{docs_contents}'
 
 	tools_prompt = f"""
-	You are an expert in {selected_tools} field. Refer to the following ### Context and ### Example to generate Python code for ### User command.
-	
+	You are an expert in {selected_tools} field. Refer to the following ### Context and ### Example to generate executable Python code only without comments for ### User command.
+
 	### Context:
 	1) Use IfcOpenShell in the BIM file {input_fname} to generate source code the user command in Python without inline code and main entry function.
-	2) Save the intermediate result of executing the user command using the process_list list variable. The process_list list contains a dictionary called obj. obj must define the name of the BIM object as name, the type as type, and other properties of the BIM object (product) as names and values.
+	2) Don't use try except block in the generated code.
+	3) Save the intermediate result of executing the user command using the process_list list variable. The process_list list contains a dictionary called obj. obj must define the name of the BIM object as name, the type as type, and other properties of the BIM object (product) as names and values.
 	For example, among the property names, area is Area, and volume is Volume, which are common names. Exclude the BIM property values ​​stored in the process_list that have the same name and value.
-	3) The variable name obtained as the result of the user command must always start with the tag named 'result_'. If the user command includes a command to output a table, save the result in a variable called result_df after creating a dataframe using the pandas library.
-	4) If the user command includes a command to output a chart, save it in a variable called result_fig using the plotly library.
-	5) If you need to get the corresponding objects (products) with attribute values ​​such as the name, use the following example code.
+	4) The variable name obtained as the result of the user command must always start with the tag named 'result_'. If the user command includes a command to output a table, save the result in a variable called result_df after creating a dataframe using the pandas library.
+	5) If the user command includes a command to output a chart, save it in a variable called result_fig using the plotly library.
+	6) If you need to get the corresponding objects (products) with attribute values ​​such as the name, use the following example code.
 	
 	### Example:
 	{contents}.
 	
-	The generated code order is the library import section, function declaration sections such as get_object_as_name functions, and the execution code to execute the command. The variable that stores the calculation result for the user command should be stored in the variable starting with the name result_, and the summary format of the final output should be stored in the result_markup variable using only HTML table, th, tr, td tags. Since an error may occur in the Python execution code, try exception handling should also be done throughout the code.
+	The generated code order is the library import section, function declaration sections such as get_object_as_name functions, and the execution code to execute the command. The variable that stores the calculation result for the user command should be stored in the variable starting with the name result_, and the summary format of the final output should be stored in the result_markup using only HTML table, th, tr, td tags.
 	
-	The user command is as follows.
+	IMPORTANT: 
+	- Do NOT use \\' or \\" in your code
+	- Write clean, executable Python code
+
+	The user command is as follows.	
 	### User command:
 	"""
 	# 'A'이름으로 시작하는 방의 갯수가 몇개인지 출력해.
@@ -172,7 +177,7 @@ def run_python_code(code: str):
 
 			except Exception as e:
 				print(f"Error: {e}")
-				prompt = f"Fix error '{e}' in the below code.\n\n {code}"
+				prompt = f"Fix error '{e}' in the below code without comments and generate new executable python code only.\n\n {code}"
 				response = llm.invoke(prompt)
 				content = response.content
 				code = preprocess_code(content)

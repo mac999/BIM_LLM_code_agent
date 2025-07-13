@@ -32,7 +32,7 @@ class StreamlitApp:
 			_llm, _chains, _vector_db, _memory = init_multi_agent([st.session_state.selected_tools], model_name=st.session_state.selected_model, init_db=True)
 			print(f"Model changed to: {self.selected_model}")
 
-		self.selected_model = st.sidebar.selectbox("Select LLM model:", ["gpt-4o", "gpt-3.5-turbo", "gemma3", "codegemma:2b", "codegemma:7b", "qwen2.5-coder:7b"], key="selected_model", on_change=on_model_change)  # Just Testing. https://ollama.com/library
+		self.selected_model = st.sidebar.selectbox("Select LLM model:", ["codegemma:7b", "qwen2.5-coder:7b", "llama3:8b-instruct-q4_K_M", "gpt-4.1", "gemma3"], key="selected_model", on_change=on_model_change)  # Just Testing. https://ollama.com/library. Performance may vary depending on the model.
 		self.selected_tools = st.sidebar.multiselect("Select tools to use:", ["Web Search", "Vector Search", "IFC Query"], key="selected_tools") # Just Testing.
 		
 		# File upload button
@@ -101,8 +101,9 @@ class StreamlitApp:
 		# Generate response using LCEL chain
 		with st.chat_message("assistant"):
 			try:
-				memory_contents = self.memory.load_memory_variables({})['chat_history'][-3:]
-				response = self.chains.invoke({"input": self.current_prompt, "chat_history": memory_contents})  # "agent_scratchpad": []})
+				# memory_contents = self.memory.load_memory_variables({})['chat_history'][-3:]
+				memory_contents = [] # TBD. consdering collision with the previous memory
+				response = self.chains.invoke({"input": self.current_prompt,"chat_history": memory_contents})  # "agent_scratchpad": []})
 
 				output = response
 				output_for_memory = None
@@ -137,7 +138,7 @@ class StreamlitApp:
 
 @st.cache_resource
 def initialize_agent(tools: List[str] = []):
-	llm, chains, vector_db, memory = init_multi_agent(tools)
+	llm, chains, vector_db, memory = init_multi_agent(tools, init_db=True)
 	return llm, chains, vector_db, memory
 
 _llm, _chains, _vector_db, _memory = initialize_agent(tools=[])
