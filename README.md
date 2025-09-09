@@ -55,7 +55,7 @@ This requires more formal RAG handling and LLM usage.
    HF_TOKEN=<your_hf_token>
    ```
    
-4. **Install Ollama models
+4. **Install Ollama models**
    ```bash
    ollama pull codegemma:7b
    ollama pull qwen2.5-coder:7b
