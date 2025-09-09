@@ -27,6 +27,7 @@ This requires more formal RAG handling and LLM usage.
 
 - Python 3.8 or later
 - An OpenAI API key
+- Ollama installation.
 - Optional: API keys for LangChain and Tavily for additional features
 
 ### Installation
@@ -53,14 +54,22 @@ This requires more formal RAG handling and LLM usage.
    TAVILY_API_KEY=<your_tavily_api_key>
    HF_TOKEN=<your_hf_token>
    ```
-
-4. **Run the Application**  
+   
+4. **Install Ollama models
+   ```bash
+   ollama pull codegemma:7b
+   ollama pull qwen2.5-coder:7b
+   ollama pull llama3:8b-instruct-q4_K_M
+   ollama pull gemma3
+   ```
+   
+5. **Run the Application**  
    Launch the Streamlit application:
    ```bash
    streamlit run bim_code_agent_app.py
    ```
 
-5. **Access the App**  
+6. **Access the App**  
    Open your browser and navigate to `http://localhost:8501` to start interacting with the BIM LLM Code Agent.
 
 ### Example Usage
