@@ -23,6 +23,7 @@ This requires more formal RAG handling and LLM usage.
 
 ## Plan
 - Model Fineturning for BIM code generation
+- Add hyperparameters(Similarity, BM25 etc) option menu for RAG
 
 ## Getting Started
 
