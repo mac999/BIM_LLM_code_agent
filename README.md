@@ -21,6 +21,9 @@ This requires more formal RAG handling and LLM usage.
 - 0.3: 2025.7. fixed bug. update code knowledge base for RAG properly.
 - 0.4: 2025.9. fixed bug. modified hyperparameter for RAG. updated code example. if there is no ifcopenshell before runnint it, install it automatically.
 
+## Plan
+- Model Fineturning for BIM code generation
+
 ## Getting Started
 
 ### Prerequisites
