@@ -4,7 +4,11 @@
 # email: laputa99999@gmail.com
 # description: This code is App of the BIM Multi-Agent System project.
 # reference:
-# 
+# prompt:
+# 'A'이름으로 시작하는 방의 갯수가 몇개인지 출력해.
+# 'A'이름으로 시작하는 방을 표 형식으로 리스트해줘. 각 방의 이름, 면적 속성도 같이 표 형식으로 출력해.
+# 'A'이름으로 시작하는 방을 표 형식으로 리스트해줘. 각 방의 이름, 면적, 속성, 부피도 같이 표 형식으로 출력해. 차트는 각 방의 이름에 대한 면적, 부피를 3차원 차트로 표시해줘야 해. 차트에 표시되는 각 데이터 포인트는 부피에 따라 색상이나 크기가 달라져야 해.
+#  
 import streamlit as st
 import os, re, textwrap, ast, json, subprocess, sys, matplotlib.pyplot as plt, pandas as pd, pyvista as pv, plotly
 from typing import List, Dict, Any

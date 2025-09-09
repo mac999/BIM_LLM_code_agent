@@ -1,0 +1,62 @@
+# BIM LLM Code Agent Requirements
+# Core dependencies for the BIM Multi-Agent System
+
+# LangChain ecosystem
+langchain
+langchain-openai
+langchain-core
+langchain-community
+
+# LLM and Embeddings
+openai
+ollama
+
+# Vector stores and search
+faiss-cpu
+chromadb
+
+# Document processing
+pypdf
+unstructured
+
+# Data processing and analysis
+pandas
+numpy
+
+# Visualization
+matplotlib
+plotly
+seaborn
+
+# BIM/CAD specific
+ifcopenshell
+pyvista
+
+# Web framework and UI
+streamlit
+
+# Search and retrieval
+tavily-python
+
+# File handling and utilities
+python-dotenv
+typing-extensions
+
+# Fast embeddings
+fastembed
+
+# Text processing
+chardet
+charset-normalizer
+
+# Additional utilities
+tqdm
+requests
+
+# Development and testing (optional)
+pytest
+black
+flake8
+
+# System utilities
+psutil
