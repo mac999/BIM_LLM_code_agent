@@ -6,6 +6,11 @@ This requires more formal RAG handling and LLM usage.
 <img src="https://github.com/mac999/BIM_LLM_code_agent/blob/main/doc/img2.JPG" height="350">
 <img src="https://github.com/mac999/BIM_LLM_code_agent/blob/main/doc/img1.gif" height="350">
 </div>
+</br>
+If you're interested in BIM data quality checker, refer to [here](https://github.com/mac999/BIM-quality-checker).
+<div style="text-align: center;">
+<img src="https://github.com/mac999/BIM-quality-checker/blob/main/img2.gif" height="300"/>
+</div>
 
 ## Features
 
