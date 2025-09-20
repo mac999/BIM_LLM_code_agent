@@ -124,8 +124,7 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 If you wan to contribute this project, please pork and PR. 
 
-- **Taewook Kang**  
-  Email: [laputa99999@gmail.com](mailto:laputa99999@gmail.com)
+- **Taewook Kang**: [laputa99999@gmail.com](mailto:laputa99999@gmail.com)
 
 ## References
 
