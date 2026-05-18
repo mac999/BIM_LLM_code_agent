@@ -8,7 +8,7 @@ This requires more formal RAG handling and LLM usage.
 <img src="https://github.com/mac999/BIM_LLM_code_agent/blob/main/doc/img1.gif" height="350">
 </p>
 
-If you're interested in Graph database-based BIM agent development, refer to [Graph RAG with Neo4j](https://github.com/mac999/BIM_graph_agent).
+If you're interested in **Graph RAG database-based BIM agent** development, refer to [Graph RAG with Neo4j](https://github.com/mac999/BIM_graph_agent).
 
 <p align="center">
 <img src="https://github.com/mac999/BIM_graph_agent/blob/main/doc/img1.jpg" height="200"> </img>
@@ -18,7 +18,7 @@ If you're interested in Graph database-based BIM agent development, refer to [Gr
 <img src="https://github.com/mac999/BIM_graph_agent/blob/main/doc/img8.jpg" height="255"> </img>
 </p>
 
-If you're interested in BIM data quality checker, refer to [here](https://github.com/mac999/BIM-quality-checker).
+If you're interested in **BIM data quality checker** development, refer to [here](https://github.com/mac999/BIM-quality-checker).
 
 <p align="center">
 <img src="https://github.com/mac999/BIM-quality-checker/blob/main/img2.gif" height="300"/>
